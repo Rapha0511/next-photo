@@ -2,7 +2,7 @@ import { auth,db,storage } from "./firebase"
 import {signInWithRedirect, GoogleAuthProvider} from 'firebase/auth'
 import {useAuthState} from 'react-firebase-hooks/auth'
 import { useEffect, useState } from "react"
-import {doc,setDoc,addDoc,collection} from "firebase/firestore"
+import {doc,setDoc,addDoc,collection,runTransaction,arr, updateDoc, arrayUnion} from "firebase/firestore"
 import { getStorage, ref , uploadBytes} from "firebase/storage";
 
 
@@ -22,12 +22,25 @@ export default function Home() {
   
 
   const insertData = async () => {
-    // await addDoc(doc(db,`usersImages/${user.uid}`),{
+    // await setDoc(doc(db,`usersImages/${user.uid}`),{
     //   userId : user.uid,
     //   userImage: "http://www.google.fr"
     // })
+    try {
+      await runTransaction(db, async (transaction) => {
+        const docRef = doc(db, 'usersImages', user.uid);
+        await setDoc(docRef, {
+          images: arrayUnion({
+            a: user.uid,
+            e: "yo"
+          })
+        }, { merge: true });
+      });
+    } catch (err) {
+      console.log(err);
+    }
     // const imagesRef = doc(db, 'usersImages', user.uid);
-    // setDoc(imagesRef, { userId : user.uid, imgURL: "http://wikk.wi" });
+    // setDoc(imagesRef, {images:[{e : user.uid, a : "http://mp.Fr"}]}),{merge:true};
   }
 
   function saveUrlInDb(){
