@@ -1,16 +1,12 @@
-import { auth,db,storage} from "../firebase"
-import {signInWithRedirect, GoogleAuthProvider} from 'firebase/auth'
-import {useAuthState} from 'react-firebase-hooks/auth'
-import { useEffect, useState } from "react"
+import {db,storage} from "../firebase"
+import { useContext, useState } from "react"
 import {doc,setDoc,runTransaction, arrayUnion, collection, getDocs, onSnapshot, updateDoc, arrayRemove} from "firebase/firestore"
 import { ref , uploadBytesResumable,getDownloadURL} from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
-import Image from "next/image"
 import AuthButtonComponent from "@/components/AuthButtonComponent"
 
 export default function Home() {
   const [data,setData] = useState()
-
   const insertData = async (imgUrl) => {
     try {
       await runTransaction(db, async (transaction) => {

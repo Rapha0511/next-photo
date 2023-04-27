@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Image from "next/image"
 import AuthButtonComponent from "@/components/AuthButtonComponent"
 import UserContext from "@/context/UserContext"
-import Link from "next/link"
+import Link from "next/link";
 
 export default function index() {
 
@@ -42,7 +42,7 @@ export default function index() {
       let files = Array.from(e.target.files);
       files.forEach(file =>{
         console.log(file)
-        const imgRef = ref(storage,`${userId}/${file.name}`);
+        const imgRef = ref(storage,`${userId}/${file.name + uuidv4()}`);
         const uploadTask = uploadBytesResumable(imgRef,file);
         uploadTask.on("state-changed",(snapshot)=>{
           console.log("upload", snapshot)
@@ -75,8 +75,6 @@ export default function index() {
     } 
 
     useEffect(()=>{
-        console.log(userId)
-        console.log(uuidv4());
         if(userId){
         // real time update de la bd c'est pas mal
         getImages()
@@ -91,9 +89,10 @@ export default function index() {
           <input type="file" id="input" multiple onChange={handleFile}/>
           {data && (
             data.map(image =>(
-              <Link href={`/${userId}/gallery/${image.id}`}>
               <div>
                 <button onClick={()=>deleteImage(image)}>{image.id}</button>
+                {console.log(image.imgUrl)}
+                <Link href={`/${userId}/gallery/${image.id}`}>
                 <Image
                 key={image.id}
                 src={image.imgUrl}
@@ -101,8 +100,8 @@ export default function index() {
                 width={500}
                 height={500}
               />
-              </div>
               </Link>
+              </div>
             ))
           )}
         </div>
