@@ -1,7 +1,7 @@
 import {db,storage} from "../../../firebase"
 import { useContext, useEffect, useState } from "react"
 import {doc,setDoc,runTransaction, arrayUnion, collection, getDocs, onSnapshot, updateDoc, arrayRemove} from "firebase/firestore"
-import { ref , uploadBytesResumable,getDownloadURL} from "firebase/storage";
+import { ref , uploadBytesResumable,getDownloadURL, deleteObject} from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import Image from "next/image"
 import AuthButtonComponent from "@/components/AuthButtonComponent"
@@ -12,7 +12,8 @@ export default function index() {
 
     const [data,setData] = useState()
     const {userId, setUserId} = useContext(UserContext)
-    const insertData = async (imgUrl) => {
+    const USER_IMG_DOC = userId  ? doc(db, 'usersImages', userId) : null
+    const insertData = async (imgUrl,imgName) => {
       try {
         await runTransaction(db, async (transaction) => {
           //emplacement collection
@@ -21,10 +22,10 @@ export default function index() {
           const querySnapshot = await getDocs(collectionRef);
           // si il sont vide, la collection n'existe pas (une collection a forcement un document a l'initialisation)
           if (!querySnapshot.empty) {
-            const docRef = doc(db, 'usersImages', userId);
-            await setDoc(docRef, {
+            await setDoc(USER_IMG_DOC, {
               images: arrayUnion({ 
                 id: uuidv4(),
+                imgName,
                 imgUrl,
               })
             }, { merge: true });
@@ -41,8 +42,8 @@ export default function index() {
       //transforme en array  pour pouvoir upload plusier fichier
       let files = Array.from(e.target.files);
       files.forEach(file =>{
-        console.log(file)
-        const imgRef = ref(storage,`${userId}/${file.name + uuidv4()}`);
+        const imgName = file.name + uuidv4()
+        const imgRef = ref(storage,`${userId}/${imgName}`);
         const uploadTask = uploadBytesResumable(imgRef,file);
         uploadTask.on("state-changed",(snapshot)=>{
           console.log("upload", snapshot)
@@ -51,17 +52,16 @@ export default function index() {
         (error)=>{
           console.log("not uploaded", error)
         },
-        ()=>{
+        async ()=>{
           //TODO faire avec await 
-          getDownloadURL(uploadTask.snapshot.ref).then((url)=>{
-             insertData(url)
-          })
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          insertData(url,imgName)
         })
       })
     }
   
     const getImages = () => {
-      return onSnapshot(doc(db, 'usersImages', userId), (doc) => {
+      return onSnapshot(USER_IMG_DOC, (doc) => {
         if (doc.data() !== undefined){
           setData(doc.data().images)
         }
@@ -69,16 +69,22 @@ export default function index() {
     }
   
     const deleteImage = async (image) => {
-      await updateDoc(doc(db, 'usersImages', userId),{
-        images: arrayRemove(image)
-      })
+      try{
+        const imageRef = ref(storage,`${userId}/${image.imgName}`)
+        await deleteObject(imageRef)
+        await updateDoc(USER_IMG_DOC,{
+          images: arrayRemove(image)
+        })
+      }catch(err){
+        console.log(err)
+      }
     } 
 
     useEffect(()=>{
-        if(userId){
-        // real time update de la bd c'est pas mal
+      if(userId){
+      // real time update de la bd c'est pas mal
         getImages()
-    }
+      }
   },[db,userId])
 
   return (
