@@ -6,44 +6,21 @@ import {useRouter} from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default  function photo() {
+export default  function Photo() {
     const router = useRouter()
     const [url,setUrl] = useState("")
     const {userId,setUserId} = useContext(UserContext);
-
-    // const getImages = async () =>{
-    //   if(userId && router.query){  
-    //       console.log(router.query)
-    //       const docRef = doc(db, 'usersImages', userId);
-    //       const docSnap = await getDoc(docRef);
-    
-    //       if (docSnap.exists()) {
-    //         const image = await docSnap.data().images.find(image => image.id === router.query.photo)
-    //         console.log(image.imgUrl)
-    //         setUrl(image.imgUrl)
-    //       } else {
-    //         // docSnap.data() will be undefined in this case
-    //         console.log("No such document!");
-    //       } 
-        
-    //   }
-    // }
 
     const getImages = async () => {
       if (userId && router.query) {
       //   //pointeur vers la subCollection
         const imageDocSnap = await doc(db, 'usersImages', userId, 'images', router.query.photo);
-      //   if (imageDocSnap.exists()) {
-      //     const data = imageDocSnap.data()
-      //     setUrl(data.imgUrl);
-      //   } else {
-      //     console.log("No such document!");
-      //   }
-      return onSnapshot(imageDocSnap, (doc) => {
-        if(doc.data() !== undefined){
-          setUrl(doc.data().imgUrl);
-          console.log(doc.data())
-        }
+        
+        return onSnapshot(imageDocSnap, (doc) => {
+          if(doc.exists()){
+            setUrl(doc.data().imgUrl);
+            console.log(doc.data())
+          }
       });
       }
     };
@@ -53,20 +30,24 @@ export default  function photo() {
     }, [userId]);
 
   return (
-    <div>
-      <Link href={`/${userId}/gallery`}>ICI</Link>  
-      <br></br>
-      <br></br>
-      {
-        url && (
-          <Image
-            src={url}
-            alt="Picture"
-            width={800}
-            height={800}
-        />
-        )      
-      }            
+    <div className='Photo'>
+        <div className='container'>
+          <Link className='back-link' href={`/${userId}/gallery`}>Close</Link>  
+          <br></br>
+          <br></br>
+          {
+            url && (
+              <div className='image-wrapper'> 
+                <Image
+                  src={url}
+                  alt="Picture"
+                  width={700}
+                  height={700}
+              />
+              </div>
+            )      
+          }    
+        </div>        
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import {storage,db} from "../firebase"
-import {updateDoc, arrayRemove,doc, deleteDoc} from "firebase/firestore"
+import {doc, deleteDoc} from "firebase/firestore"
 import { ref ,deleteObject} from "firebase/storage";
 import UserContext from '@/context/UserContext';
 
@@ -20,8 +20,8 @@ export default function DeleteButtonComponent({image}) {
         }
       } 
   return (
-    <div>
-        <button onClick={()=>deleteImage(image)}>{image.id}</button>
+    <div className='DeleteButtonComponent'>
+        <button onClick={()=>deleteImage(image)}>X</button>
     </div>
   )
 }

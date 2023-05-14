@@ -2,6 +2,9 @@ import UserContext from '@/context/UserContext';
 import { useEffect, useState } from 'react';
 import { auth } from '@/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import "../styles/gallery.css"
+import "../styles/login.css"
+import "../styles/photo.css"
 
 export default function App({ Component, pageProps }) {
   const [userId, setUserId] = useState(null);

@@ -10,19 +10,12 @@ export default function UploadComponent() {
     const {userId,setUserId} = useContext(UserContext)
     const USER_IMG_DOC = userId  ? doc(db, 'usersImages', userId) : null
 
-    // const insertData = async (imgUrl, imgName) => {
-    //     try {
-    //       const imgId = uuidv4();
-    //       const imgDocRef = doc(db, 'usersImages', userId, 'images', imgId);
-    //       await setDoc(imgDocRef, {
-    //         id: imgId,
-    //         imgName,
-    //         imgUrl,
-    //       });
-    //     } catch (err) {
-    //       console.log(err);
-    //     }
-    //   };
+    const getFileExtension = (file) => {
+      let ext = file.name.split('.');
+      console.log(ext[ext.length - 1])
+      return ext[ext.length - 1]
+    }
+
     const insertData = async (imgUrl, imgName) => {
         try {
           const imgId = uuidv4();
@@ -44,27 +37,36 @@ export default function UploadComponent() {
     const handleFile = async (e) => {
       //transforme en array  pour pouvoir upload plusier fichier
       let files = Array.from(e.target.files);
-      files.forEach(file =>{
-        const imgName = file.name + uuidv4()
-        const imgRef = ref(storage,`${userId}/${imgName}`);
-        const uploadTask = uploadBytesResumable(imgRef,file);
-        uploadTask.on("state-changed",(snapshot)=>{
-          console.log("upload", snapshot)
-        },
-  
-        (error)=>{
-          console.log("not uploaded", error)
-        },
-        async ()=>{
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
-          insertData(url,imgName)
+      if(files.length){
+        files.forEach(file =>{
+          const acceptedExtensions = ["png", "jpg", "jpeg"];
+          const imgExtension = getFileExtension(file)
+
+          if(acceptedExtensions.includes(imgExtension)){
+            const imgName = file.name + uuidv4()
+            const imgRef = ref(storage,`${userId}/${imgName}`);
+            const uploadTask = uploadBytesResumable(imgRef,file);
+            uploadTask.on("state-changed",(snapshot)=>{
+              console.log("upload", snapshot)
+            },
+      
+            (error)=>{
+              console.log("not uploaded", error)
+            },
+            async ()=>{
+              const url = await getDownloadURL(uploadTask.snapshot.ref);
+              insertData(url,imgName)
+            })
+          }else{
+            console.error("Format non supporté")
+          }
         })
-      })
+      }
     }
   
   return (
-    <div>
-        <input type="file" id="input" multiple onChange={handleFile}/>
+    <div className='UploadComponent'>
+        <input type="file" id="input" accept=".jpg,.jpeg,.png" multiple onChange={handleFile}/>
     </div>
   )
 }
