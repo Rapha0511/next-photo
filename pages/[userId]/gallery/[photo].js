@@ -5,11 +5,13 @@ import UserContext from "@/context/UserContext"
 import {useRouter} from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
+import ImageNotFoundComponent from '@/components/ImageNotFoundComponent';
 
 export default  function Photo() {
     const router = useRouter()
     const [url,setUrl] = useState("")
     const {userId,setUserId} = useContext(UserContext);
+    const [notFound,setNotFound] = useState(false)
 
     const getImages = async () => {
       if (userId && router.query) {
@@ -20,6 +22,8 @@ export default  function Photo() {
           if(doc.exists()){
             setUrl(doc.data().imgUrl);
             console.log(doc.data())
+          }else{
+            setNotFound(true)
           }
       });
       }
@@ -36,17 +40,20 @@ export default  function Photo() {
           <br></br>
           <br></br>
           {
+            notFound ? (
+              <ImageNotFoundComponent/>
+            ) :
             url && (
               <div className='image-wrapper'> 
                 <Image
                   src={url}
                   alt="Picture"
-                  width={700}
+                  width={900}
                   height={700}
               />
               </div>
-            )      
-          }    
+            ) 
+          }  
         </div>        
     </div>
   )

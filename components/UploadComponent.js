@@ -5,10 +5,13 @@ import {doc,setDoc,runTransaction, arrayUnion, collection, getDocs,getDoc,update
 import { ref , uploadBytesResumable,getDownloadURL} from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import UserContext from "@/context/UserContext"
-export default function UploadComponent() {
+import styles from "../styles/uploadButton.module.css"
+import logo from '../public/cloud.png'
+import Image from 'next/image';
+
+export default function UploadComponent({setProgress}) {
 
     const {userId,setUserId} = useContext(UserContext)
-    const USER_IMG_DOC = userId  ? doc(db, 'usersImages', userId) : null
 
     const getFileExtension = (file) => {
       let ext = file.name.split('.');
@@ -47,7 +50,7 @@ export default function UploadComponent() {
             const imgRef = ref(storage,`${userId}/${imgName}`);
             const uploadTask = uploadBytesResumable(imgRef,file);
             uploadTask.on("state-changed",(snapshot)=>{
-              console.log("upload", snapshot)
+              setProgress(Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100))
             },
       
             (error)=>{
@@ -66,7 +69,13 @@ export default function UploadComponent() {
   
   return (
     <div className='UploadComponent'>
-        <input type="file" id="input" accept=".jpg,.jpeg,.png" multiple onChange={handleFile}/>
+        <div className={styles.file}>
+          <label htmlFor='input-file'>
+            <Image src={logo} width={30} height={30} alt='logo'/>
+            Select a file
+          </label>
+          <input type="file" id="input-file" accept=".jpg,.jpeg,.png" multiple onChange={handleFile}/>
+        </div>
     </div>
   )
 }

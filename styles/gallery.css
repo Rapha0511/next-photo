@@ -12,7 +12,6 @@
   }
 
   .Gallery .AuthButtonComponent{
-    width: 100%;
     display: flex;
     justify-content:  flex-end ;
   }
@@ -27,8 +26,8 @@
     font-size: 16px;
     padding: 10px 24px;
     cursor: pointer;
-    margin: 5px;
     border-radius: 5px;
+    height: 40px;
   }
 
   .DeleteButtonComponent {
@@ -40,11 +39,6 @@
     margin-bottom: 20px;
   }
   
-  .UploadComponent input[type="file"] {
-    font-size: 1rem;
-    padding: 5px;
-    cursor: pointer;
-  }
   
   .gallerygrid {
     column-count: 4;
@@ -82,3 +76,8 @@
     margin: 0;
   }
 
+  .buttons{
+    display: flex;
+    width: 90%;
+    justify-content: space-between;
+  }

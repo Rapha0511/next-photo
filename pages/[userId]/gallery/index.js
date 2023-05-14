@@ -8,8 +8,10 @@ import UserContext from "@/context/UserContext"
 import Link from "next/link";
 import DeleteButtonComponent from "@/components/DeleteButtonComponent";
 import { collection } from "firebase/firestore"
+import ProgressComponent from "@/components/ProgressComponent"
 
 export default function Gallery() {
+    const [progress,setProgress] = useState()
     const [data,setData] = useState()
     const {userId, setUserId} = useContext(UserContext)
   
@@ -37,8 +39,11 @@ export default function Gallery() {
 
   return (
     <div className="Gallery">
-      <AuthButtonComponent buttonState={'logout'} />
-        <UploadComponent />
+      <div className="buttons">
+        <UploadComponent setProgress={setProgress}/>
+        <h3>Bienvenu dans votre Gallerie d'image</h3>
+        <AuthButtonComponent buttonState={'logout'} />
+      </div>
         {data && (
           <div className="gallerygrid">
             {data.map((image) => (
@@ -56,6 +61,9 @@ export default function Gallery() {
               </div>
             ))}
           </div>
+        )}
+        {progress && progress < 100 && (
+          <ProgressComponent progress={progress}/>
         )}
     </div>
   );
