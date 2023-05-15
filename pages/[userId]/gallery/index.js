@@ -20,7 +20,6 @@ export default function Gallery() {
       const imagesCollectionRef = collection(db, 'usersImages', userId, 'images');
       //reatime update
       return onSnapshot(imagesCollectionRef, (querySnapshot) => {
-        console.log(querySnapshot)
         const imagesData = [];
         querySnapshot.forEach((doc) => {
           imagesData.push(doc.data());
@@ -41,9 +40,14 @@ export default function Gallery() {
     <div className="Gallery">
       <div className="buttons">
         <UploadComponent setProgress={setProgress}/>
-        <h3>Bienvenu dans votre Gallerie d'image</h3>
+        <h2>Bienvenue dans votre galerie d'images</h2>
         <AuthButtonComponent buttonState={'logout'} />
       </div>
+      {data?.length === 0 &&(
+        <div className="start">
+          <h1>Commencez a Uploader vos images !</h1>
+        </div>
+      )}
         {data && (
           <div className="gallerygrid">
             {data.map((image) => (

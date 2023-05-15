@@ -1,14 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap');
+
 .Gallery {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    height: 100vh;
   }
   
   .Gallery h1 {
     font-size: 2rem;
     color: #333;
     margin-bottom: 20px;
+    font-family: 'Open Sans', sans-serif;
+
   }
 
   .Gallery .AuthButtonComponent{
@@ -30,11 +34,18 @@
     height: 40px;
   }
 
-  .DeleteButtonComponent {
-    border: none;
-    color: white;
+  .Gallery .start{
+    font-family: 'Open Sans', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-  
+
+  .Gallery .start h1 {
+    color: red;
+  }
+
   .UploadComponent {
     margin-bottom: 20px;
   }
@@ -66,10 +77,26 @@
     transform: scale(1.05);
   }
 
-  .DeleteButtonComponent {
+  .DeleteButtonComponent button {
     position: absolute;
+    border: none;
     top: 5px;
     right: 5px;
+    background-color: red;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 50%;
+  }
+
+  .DeleteButtonComponent{
+    display: none;
+  }
+
+  .imagewrapper:hover >  .DeleteButtonComponent{
+    display: block;
   }
 
   body{
@@ -78,6 +105,7 @@
 
   .buttons{
     display: flex;
-    width: 90%;
-    justify-content: space-between;
+    width: 100%;
+    justify-content: space-around;
+    margin-top: 20px;
   }

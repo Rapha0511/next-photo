@@ -7,11 +7,8 @@ import UserContext from '@/context/UserContext';
 export default function DeleteButtonComponent({image}) {
 
     const {userId,setUserId} = useContext(UserContext)
-
     const deleteImage = async (image) => {
         try{
-            console.log(image)
-
           const imageRef = ref(storage,`${userId}/${image.imgName}`)
           await deleteObject(imageRef)
           await deleteDoc(doc(db, 'usersImages', userId, "images", image.id))
@@ -19,6 +16,7 @@ export default function DeleteButtonComponent({image}) {
           console.log(err)
         }
       } 
+
   return (
     <div className='DeleteButtonComponent'>
         <button onClick={()=>deleteImage(image)}>X</button>

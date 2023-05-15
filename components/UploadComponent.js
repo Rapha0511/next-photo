@@ -15,7 +15,6 @@ export default function UploadComponent({setProgress}) {
 
     const getFileExtension = (file) => {
       let ext = file.name.split('.');
-      console.log(ext[ext.length - 1])
       return ext[ext.length - 1]
     }
 
@@ -32,17 +31,17 @@ export default function UploadComponent({setProgress}) {
           console.log(err);
         }
       };
+
     /**
-     * 
-     * @param {event} 
      * main function to upload the file in Firebase Storage and insert the url in firebase firestore
+     * @param {Event} 
      */
     const handleFile = async (e) => {
       //transforme en array  pour pouvoir upload plusier fichier
       let files = Array.from(e.target.files);
       if(files.length){
         files.forEach(file =>{
-          const acceptedExtensions = ["png", "jpg", "jpeg"];
+          const acceptedExtensions = ["png", "jpg", "jpeg","svg","gif"];
           const imgExtension = getFileExtension(file)
 
           if(acceptedExtensions.includes(imgExtension)){
@@ -51,6 +50,7 @@ export default function UploadComponent({setProgress}) {
             const uploadTask = uploadBytesResumable(imgRef,file);
             uploadTask.on("state-changed",(snapshot)=>{
               setProgress(Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100))
+              e.target.value = ""
             },
       
             (error)=>{
@@ -74,7 +74,7 @@ export default function UploadComponent({setProgress}) {
             <Image src={logo} width={30} height={30} alt='logo'/>
             Select a file
           </label>
-          <input type="file" id="input-file" accept=".jpg,.jpeg,.png" multiple onChange={handleFile}/>
+          <input type="file" id="input-file" accept=".jpg,.jpeg,.png,.webp,.svg,.gif" multiple onChange={handleFile}/>
         </div>
     </div>
   )

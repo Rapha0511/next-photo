@@ -21,13 +21,13 @@ export default  function Photo() {
         return onSnapshot(imageDocSnap, (doc) => {
           if(doc.exists()){
             setUrl(doc.data().imgUrl);
-            console.log(doc.data())
           }else{
             setNotFound(true)
           }
       });
       }
     };
+
 
     useEffect(() => {
       getImages();
